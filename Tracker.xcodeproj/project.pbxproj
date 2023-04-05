@@ -15,13 +15,13 @@
 		132EDACC29DAF9AF007E8C09 /* TrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132EDACB29DAF9AF007E8C09 /* TrackersViewController.swift */; };
 		132EDACF29DAFE40007E8C09 /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132EDACE29DAFE40007E8C09 /* StatisticViewController.swift */; };
 		13558ADE29DB24B700C50298 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13558ADD29DB24B700C50298 /* Launch Screen.storyboard */; };
+		136E373E29DDA2E40040D472 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 136E373D29DDA2E40040D472 /* Tracker.swift */; };
 		139E73B529DC32F200F94DFD /* YandexSansText-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 139E73B029DC32F200F94DFD /* YandexSansText-Bold.ttf */; };
 		139E73B629DC32F200F94DFD /* YandexSansDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 139E73B129DC32F200F94DFD /* YandexSansDisplay-Regular.ttf */; };
 		139E73B729DC32F200F94DFD /* YandexSansText-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 139E73B229DC32F200F94DFD /* YandexSansText-Medium.ttf */; };
 		139E73B829DC32F200F94DFD /* YandexSansText-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 139E73B329DC32F200F94DFD /* YandexSansText-Regular.ttf */; };
 		139E73B929DC32F200F94DFD /* YandexSansDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 139E73B429DC32F200F94DFD /* YandexSansDisplay-Bold.ttf */; };
-		139E73BC29DC681B00F94DFD /* NewHabitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139E73BB29DC681B00F94DFD /* NewHabitViewController.swift */; };
-		139E73BE29DC68DB00F94DFD /* NewNonRegularEventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139E73BD29DC68DB00F94DFD /* NewNonRegularEventViewController.swift */; };
+		139E73BC29DC681B00F94DFD /* SetNewTrackerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139E73BB29DC681B00F94DFD /* SetNewTrackerViewController.swift */; };
 		13DA9A6229DC1E1A006B5A16 /* NewTrackersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DA9A6129DC1E1A006B5A16 /* NewTrackersViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,13 +36,13 @@
 		132EDACB29DAF9AF007E8C09 /* TrackersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewController.swift; sourceTree = "<group>"; };
 		132EDACE29DAFE40007E8C09 /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
 		13558ADD29DB24B700C50298 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		136E373D29DDA2E40040D472 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
 		139E73B029DC32F200F94DFD /* YandexSansText-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YandexSansText-Bold.ttf"; sourceTree = "<group>"; };
 		139E73B129DC32F200F94DFD /* YandexSansDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YandexSansDisplay-Regular.ttf"; sourceTree = "<group>"; };
 		139E73B229DC32F200F94DFD /* YandexSansText-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YandexSansText-Medium.ttf"; sourceTree = "<group>"; };
 		139E73B329DC32F200F94DFD /* YandexSansText-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YandexSansText-Regular.ttf"; sourceTree = "<group>"; };
 		139E73B429DC32F200F94DFD /* YandexSansDisplay-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YandexSansDisplay-Bold.ttf"; sourceTree = "<group>"; };
-		139E73BB29DC681B00F94DFD /* NewHabitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewHabitViewController.swift; sourceTree = "<group>"; };
-		139E73BD29DC68DB00F94DFD /* NewNonRegularEventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewNonRegularEventViewController.swift; sourceTree = "<group>"; };
+		139E73BB29DC681B00F94DFD /* SetNewTrackerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetNewTrackerViewController.swift; sourceTree = "<group>"; };
 		13DA9A6129DC1E1A006B5A16 /* NewTrackersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTrackersViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,6 +86,7 @@
 				132EDACD29DAFE1F007E8C09 /* Statistics */,
 				132EDACA29DAF991007E8C09 /* Trackers */,
 				132EDAC729DADDFC007E8C09 /* TabBar */,
+				136E373D29DDA2E40040D472 /* Tracker.swift */,
 			);
 			path = Tracker;
 			sourceTree = "<group>";
@@ -103,8 +104,7 @@
 			children = (
 				132EDACB29DAF9AF007E8C09 /* TrackersViewController.swift */,
 				13DA9A6129DC1E1A006B5A16 /* NewTrackersViewController.swift */,
-				139E73BB29DC681B00F94DFD /* NewHabitViewController.swift */,
-				139E73BD29DC68DB00F94DFD /* NewNonRegularEventViewController.swift */,
+				139E73BB29DC681B00F94DFD /* SetNewTrackerViewController.swift */,
 			);
 			path = Trackers;
 			sourceTree = "<group>";
@@ -206,10 +206,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				132EDAC929DADE10007E8C09 /* TabBarController.swift in Sources */,
-				139E73BE29DC68DB00F94DFD /* NewNonRegularEventViewController.swift in Sources */,
-				139E73BC29DC681B00F94DFD /* NewHabitViewController.swift in Sources */,
+				139E73BC29DC681B00F94DFD /* SetNewTrackerViewController.swift in Sources */,
 				132EDACF29DAFE40007E8C09 /* StatisticViewController.swift in Sources */,
 				132EDACC29DAF9AF007E8C09 /* TrackersViewController.swift in Sources */,
+				136E373E29DDA2E40040D472 /* Tracker.swift in Sources */,
 				132EDA6E29D6D2DB007E8C09 /* AppDelegate.swift in Sources */,
 				13DA9A6229DC1E1A006B5A16 /* NewTrackersViewController.swift in Sources */,
 				132EDA7029D6D2DB007E8C09 /* SceneDelegate.swift in Sources */,

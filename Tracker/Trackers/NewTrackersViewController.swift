@@ -10,14 +10,14 @@ import UIKit
 
 final class NewTrackersViewController: UIViewController {
     
-    private var titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.text = "Cоздание трекера"
         titleLabel.font = UIFont(name: "YandexSansText-Medium", size: 16)
         return titleLabel
     }()
     
-    private var habitButton: UIButton = {
+    private lazy var habitButton: UIButton = {
         let habitButton = UIButton()
         habitButton.setTitle("Привычка", for: .normal)
         habitButton.setTitleColor(.white, for: .normal)
@@ -27,7 +27,7 @@ final class NewTrackersViewController: UIViewController {
         return habitButton
     }()
     
-    private var nonRegularEventButton: UIButton = {
+    private lazy var nonRegularEventButton: UIButton = {
         let nonRegularEventButton = UIButton()
         nonRegularEventButton.setTitle("Нерегулярные события", for: .normal)
         nonRegularEventButton.setTitleColor(.white, for: .normal)
@@ -57,7 +57,7 @@ final class NewTrackersViewController: UIViewController {
         nonRegularEventButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 38),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
             habitButton.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 295),
@@ -79,12 +79,14 @@ final class NewTrackersViewController: UIViewController {
     }
     
     @objc private func didTapHabitButton() {
-        let newHabitViewController = NewHabitViewController()
-        present(newHabitViewController, animated: true)
+        let setNewTrackerViewController = SetNewTrackerViewController()
+        setNewTrackerViewController.typeOfTracker = .habit
+        present(setNewTrackerViewController, animated: true)
     }
     
     @objc private func didTapNonRegularEventButton() {
-        let nonRegularViewController = NonRegularEventViewController()
-        present(nonRegularViewController, animated: true)
+        let setNewTrackerViewController = SetNewTrackerViewController()
+        setNewTrackerViewController.typeOfTracker = .nonRegularEvent
+        present(setNewTrackerViewController, animated: true)
     }
 }

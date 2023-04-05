@@ -12,7 +12,7 @@ final class TrackersViewController: UIViewController {
     
     var currentDate: Date?
     
-    private var newTrackerButton: UIButton = {
+    private lazy var newTrackerButton: UIButton = {
         let newTrackerButtonImage = UIImage(named: "newTrackerButton")
         let newTrackerButton = UIButton.systemButton(
             with: newTrackerButtonImage!,
@@ -22,34 +22,34 @@ final class TrackersViewController: UIViewController {
         return newTrackerButton
     }()
     
-    private var trackersLabel: UILabel = {
+    private lazy var trackersLabel: UILabel = {
         let trackersLabel = UILabel()
         trackersLabel.text = "Трекеры"
         trackersLabel.font = UIFont(name: "YandexSansDisplay-Bold", size: 34)
         return trackersLabel
     }()
     
-    private var datePicker: UIDatePicker = {
+    private lazy var datePicker: UIDatePicker = {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         return datePicker
     }()
     
-    private var searchBar: UISearchBar = {
+    private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Поиск"
         searchBar.searchBarStyle = .minimal
         return searchBar
     }()
     
-    private var imagePlaceholder: UIImageView = {
+    private lazy var imagePlaceholder: UIImageView = {
         let image = UIImage(named: "trackersPlaceholder")
         let imagePlaceholder = UIImageView(image: image)
         return imagePlaceholder
     }()
     
-    private var textPlaceholder: UILabel = {
+    private lazy var textPlaceholder: UILabel = {
         let textPlaceholder = UILabel()
         textPlaceholder.text = "Что будем отслеживать?"
         textPlaceholder.font = UIFont(name: "YandexSansText-Medium", size: 12)
