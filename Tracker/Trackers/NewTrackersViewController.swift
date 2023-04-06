@@ -19,6 +19,7 @@ final class NewTrackersViewController: UIViewController {
     
     private lazy var habitButton: UIButton = {
         let habitButton = UIButton()
+        habitButton.titleLabel?.font = UIFont(name: "YandexSansText-Medium", size: 16)
         habitButton.setTitle("Привычка", for: .normal)
         habitButton.setTitleColor(.white, for: .normal)
         habitButton.backgroundColor = .black
@@ -29,6 +30,7 @@ final class NewTrackersViewController: UIViewController {
     
     private lazy var nonRegularEventButton: UIButton = {
         let nonRegularEventButton = UIButton()
+        nonRegularEventButton.titleLabel?.font = UIFont(name: "YandexSansText-Medium", size: 16)
         nonRegularEventButton.setTitle("Нерегулярные события", for: .normal)
         nonRegularEventButton.setTitleColor(.white, for: .normal)
         nonRegularEventButton.backgroundColor = .black
@@ -37,7 +39,7 @@ final class NewTrackersViewController: UIViewController {
         return nonRegularEventButton
     }()
     
-    //MARK: viewDidLoad
+    //MARK: - viewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +47,7 @@ final class NewTrackersViewController: UIViewController {
         setUI()
     }
     
-    //MARK: private func
+    //MARK: - private func
     
     private func setUI() {
         view.addSubview(titleLabel)
@@ -71,10 +73,6 @@ final class NewTrackersViewController: UIViewController {
             nonRegularEventButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             nonRegularEventButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             nonRegularEventButton.heightAnchor.constraint(equalToConstant: 60)
-            
-            
-            
-            
         ])
     }
     

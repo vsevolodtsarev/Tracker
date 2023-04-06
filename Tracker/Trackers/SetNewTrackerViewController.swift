@@ -42,7 +42,7 @@ final class SetNewTrackerViewController: UIViewController {
     
     private lazy var createTrackerButton: UIButton = {
         let createTrackerButton = UIButton()
-        createTrackerButton.titleLabel?.font = UIFont(name: "YandexSansDisplay-Regular", size: 16)
+        createTrackerButton.titleLabel?.font = UIFont(name: "YandexSansText-Medium", size: 16)
         createTrackerButton.setTitle("Cоздать", for: .normal)
         createTrackerButton.setTitleColor(.white, for: .normal)
         createTrackerButton.backgroundColor = UIColor(named: "ypGrey")
@@ -63,7 +63,25 @@ final class SetNewTrackerViewController: UIViewController {
         return cancelCreateTrackerButton
     }()
     
-    //MARK: viewDidLoad
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.frame = view.bounds
+        return scrollView
+    }()
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.layer.cornerRadius = 16
+        tableView.isScrollEnabled = false
+        tableView.backgroundColor = UIColor(named: "ypLightBackgroundGrey")
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        return tableView
+    }()
+    
+    //MARK: - viewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,38 +89,61 @@ final class SetNewTrackerViewController: UIViewController {
         setUI()
     }
     
-    //MARK: private func
+    //MARK: - private func
+    
+    private func tableViewHeightSize() -> CGFloat {
+        let tableViewHeight: CGFloat
+        switch typeOfTracker {
+        case .habit: tableViewHeight = 149
+        case .nonRegularEvent: tableViewHeight = 74
+        case .none: tableViewHeight = 0
+        }
+        return tableViewHeight
+    }
     
     private func setUI() {
         view.addSubview(titleLabel)
-        view.addSubview(trackerNameTextField)
-        view.addSubview(cancelCreateTrackerButton)
-        view.addSubview(createTrackerButton)
+        view.addSubview(scrollView)
+        scrollView.addSubview(trackerNameTextField)
+        scrollView.addSubview(cancelCreateTrackerButton)
+        scrollView.addSubview(createTrackerButton)
+        scrollView.addSubview(tableView)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         trackerNameTextField.translatesAutoresizingMaskIntoConstraints = false
         cancelCreateTrackerButton.translatesAutoresizingMaskIntoConstraints = false
         createTrackerButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            trackerNameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
+            scrollView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            
+            trackerNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor),
             trackerNameTextField.heightAnchor.constraint(equalToConstant: 75),
             trackerNameTextField.widthAnchor.constraint(equalToConstant: 150),
             trackerNameTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             trackerNameTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
+            tableView.topAnchor.constraint(equalTo: trackerNameTextField.bottomAnchor, constant: 24),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            tableView.heightAnchor.constraint(equalToConstant: tableViewHeightSize()),
+            
             cancelCreateTrackerButton.heightAnchor.constraint(equalToConstant: 60),
             cancelCreateTrackerButton.widthAnchor.constraint(equalToConstant: 166),
-            cancelCreateTrackerButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            cancelCreateTrackerButton.bottomAnchor.constraint(equalTo: scrollView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             cancelCreateTrackerButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             
             createTrackerButton.heightAnchor.constraint(equalToConstant: 60),
             createTrackerButton.leadingAnchor.constraint(equalTo: cancelCreateTrackerButton.trailingAnchor, constant: 8),
             createTrackerButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            createTrackerButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            createTrackerButton.bottomAnchor.constraint(equalTo: scrollView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             
         ])
     }
@@ -116,9 +157,19 @@ final class SetNewTrackerViewController: UIViewController {
     }
 }
 
+//MARK: - extensions
+
 extension SetNewTrackerViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return self.textLimit(existingText: textField.text, newText: string, limit: 10)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return trackerNameTextField.resignFirstResponder()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
     private func textLimit(
@@ -129,4 +180,50 @@ extension SetNewTrackerViewController: UITextFieldDelegate {
             let isAtLimit = text.count + newText.count <= limit
             return isAtLimit
         }
+}
+
+extension SetNewTrackerViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.row {
+        case 0:
+            let categoryViewController = CategoryViewController()
+            present(categoryViewController, animated: true)
+        case 1:
+            let scheduleViewController = ScheduleViewController()
+            present(scheduleViewController, animated: true)
+        default: break
+        }
+    }
+}
+
+extension SetNewTrackerViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch typeOfTracker {
+        case .habit: return 2
+        case .nonRegularEvent: return 1
+        case .none: return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
+        cell.textLabel?.font = UIFont(name: "YandexSansDisplay-Regular", size: 17)
+        cell.detailTextLabel?.font = UIFont(name: "YandexSansDisplay-Regular", size: 17)
+        cell.detailTextLabel?.textColor = UIColor(named: "ypGrey")
+        cell.backgroundColor = .clear
+        cell.selectionStyle = .none
+        cell.accessoryType = .disclosureIndicator
+        
+        switch indexPath.row {
+        case 0: cell.textLabel?.text = "Категория"
+            cell.detailTextLabel?.text = "Selected category"
+        case 1: cell.textLabel?.text = "Расписание"
+        default: break
+        }
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 75
+    }
 }

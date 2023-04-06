@@ -11,6 +11,11 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     var currentDate: Date?
+    var categories: [TrackerCategory] = []
+    var visibleCategories: [TrackerCategory] = []
+    var completedTrackers: Set<TrackerRecord> = []
+    
+    
     
     private lazy var newTrackerButton: UIButton = {
         let newTrackerButtonImage = UIImage(named: "newTrackerButton")
@@ -56,7 +61,7 @@ final class TrackersViewController: UIViewController {
         return textPlaceholder
     }()
     
-    //MARK: viewDidLoad
+    //MARK: - viewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +69,7 @@ final class TrackersViewController: UIViewController {
         setUI()
     }
     
-    //MARK: private func
+    //MARK: - private func
     
     private func setUI() {
         view.addSubview(newTrackerButton)
