@@ -24,7 +24,7 @@ final class NewTrackersViewController: UIViewController {
         habitButton.setTitleColor(.white, for: .normal)
         habitButton.backgroundColor = .black
         habitButton.layer.cornerRadius = 16
-        habitButton.addTarget(nil, action: #selector(didTapHabitButton), for: .touchUpInside)
+        habitButton.addTarget(self, action: #selector(didTapHabitButton), for: .touchUpInside)
         return habitButton
     }()
     
@@ -35,7 +35,7 @@ final class NewTrackersViewController: UIViewController {
         nonRegularEventButton.setTitleColor(.white, for: .normal)
         nonRegularEventButton.backgroundColor = .black
         nonRegularEventButton.layer.cornerRadius = 16
-        nonRegularEventButton.addTarget(nil, action: #selector(didTapNonRegularEventButton), for: .touchUpInside)
+        nonRegularEventButton.addTarget(self, action: #selector(didTapNonRegularEventButton), for: .touchUpInside)
         return nonRegularEventButton
     }()
     

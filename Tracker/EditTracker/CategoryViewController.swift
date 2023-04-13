@@ -8,8 +8,13 @@
 import Foundation
 import UIKit
 
+protocol CategoryViewControllerDelegate: AnyObject {
+    func routeCategory(newCategory: String)
+}
+
 final class CategoryViewController: UIViewController {
     
+    weak var delegate: CategoryViewControllerDelegate?
     
     //MARK: - viewDidLoad
     

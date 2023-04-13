@@ -8,9 +8,15 @@
 import Foundation
 import UIKit
 
+protocol ScheduleViewControllerDelegate: AnyObject {
+    func routeSchedule(selectedSchedule: [String])
+}
+
 final class ScheduleViewController: UIViewController {
     
-    let weekday = WeekDay.allCases
+    weak var delegate: ScheduleViewControllerDelegate?
+    private var selectedSchedule: [String] = []
+    private let weekday = WeekDay.allCases
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -80,7 +86,19 @@ final class ScheduleViewController: UIViewController {
     }
     
     @objc private func didTapAcceptButton() {
+        delegate?.routeSchedule(selectedSchedule: selectedSchedule)
         dismiss(animated: true)
+        
+    }
+    
+    private func configureAcceptButton() {
+        if selectedSchedule.isEmpty {
+            acceptButton.isEnabled = false
+            acceptButton.backgroundColor = UIColor(named: "ypGrey")
+        } else {
+            acceptButton.isEnabled = true
+            acceptButton.backgroundColor = .black
+        }
     }
 }
 
@@ -94,7 +112,8 @@ extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let switcher = UISwitch()
         switcher.onTintColor = UIColor(named: "ypBlue")
-        switcher.addTarget(nil, action: #selector(didSwitchIsOn), for: .valueChanged)
+        switcher.tag = indexPath.row
+        switcher.addTarget(self, action: #selector(didSwitchIsOn), for: .valueChanged)
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
         cell.accessoryView = switcher
         cell.textLabel?.font = UIFont(name: "YandexSansDisplay-Regular", size: 17)
@@ -110,16 +129,35 @@ extension ScheduleViewController: UITableViewDataSource {
     
     @objc private func didSwitchIsOn(_ sender: UISwitch) {
         if sender.isOn {
-            acceptButton.backgroundColor = .black
-            acceptButton.isEnabled = true
+            switch sender.tag {
+            case 0: selectedSchedule.append("Пн")
+            case 1: selectedSchedule.append("Вт")
+            case 2: selectedSchedule.append("Ср")
+            case 3: selectedSchedule.append("Чт")
+            case 4: selectedSchedule.append("Пт")
+            case 5: selectedSchedule.append("Сб")
+            case 6: selectedSchedule.append("Вс")
+            default: break
+            }
+            
+            configureAcceptButton()
+            
         } else {
-            acceptButton.backgroundColor = UIColor(named: "ypGrey")
-            acceptButton.isEnabled = false
+            switch sender.tag {
+            case 0: selectedSchedule.removeAll { $0 == "Пн" }
+            case 1: selectedSchedule.removeAll { $0 == "Вт" }
+            case 2: selectedSchedule.removeAll { $0 == "Ср" }
+            case 3: selectedSchedule.removeAll { $0 == "Чт" }
+            case 4: selectedSchedule.removeAll { $0 == "Пт" }
+            case 5: selectedSchedule.removeAll { $0 == "Сб" }
+            case 6: selectedSchedule.removeAll { $0 == "Вс" }
+            default: break
+            }
+            
+            configureAcceptButton()
         }
     }
 }
 
 extension ScheduleViewController: UITableViewDelegate {
-    
 }
-

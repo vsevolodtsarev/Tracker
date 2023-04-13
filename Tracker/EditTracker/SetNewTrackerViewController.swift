@@ -8,9 +8,16 @@
 import Foundation
 import UIKit
 
+protocol SetNewTrackerViewControllerDelegate: AnyObject {
+    func routeNewTracker(id: String, name: String, schedule: [String])
+}
+
 final class SetNewTrackerViewController: UIViewController {
     
+    private var category: String?
+    private var schedule: [String] = []
     var typeOfTracker: TypeOfTracker?
+    weak var delegate: SetNewTrackerViewControllerDelegate?
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -47,7 +54,8 @@ final class SetNewTrackerViewController: UIViewController {
         createTrackerButton.setTitleColor(.white, for: .normal)
         createTrackerButton.backgroundColor = UIColor(named: "ypGrey")
         createTrackerButton.layer.cornerRadius = 16
-        createTrackerButton.addTarget(nil, action: #selector(didTapCreateButton), for: .touchUpInside)
+        createTrackerButton.isEnabled = false
+        createTrackerButton.addTarget(self, action: #selector(didTapCreateButton), for: .touchUpInside)
         return createTrackerButton
     }()
     
@@ -59,16 +67,10 @@ final class SetNewTrackerViewController: UIViewController {
         cancelCreateTrackerButton.layer.borderWidth = 1
         cancelCreateTrackerButton.layer.borderColor = UIColor(named: "ypRed")?.cgColor
         cancelCreateTrackerButton.layer.cornerRadius = 16
-        cancelCreateTrackerButton.addTarget(nil, action: #selector(didTapCancelButton), for: .touchUpInside)
+        cancelCreateTrackerButton.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
         return cancelCreateTrackerButton
     }()
-    
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.frame = view.bounds
-        return scrollView
-    }()
-    
+
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -87,6 +89,7 @@ final class SetNewTrackerViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setUI()
+
     }
     
     //MARK: - private func
@@ -103,28 +106,22 @@ final class SetNewTrackerViewController: UIViewController {
     
     private func setUI() {
         view.addSubview(titleLabel)
-        view.addSubview(scrollView)
-        scrollView.addSubview(trackerNameTextField)
-        scrollView.addSubview(cancelCreateTrackerButton)
-        scrollView.addSubview(createTrackerButton)
-        scrollView.addSubview(tableView)
+        view.addSubview(trackerNameTextField)
+        view.addSubview(cancelCreateTrackerButton)
+        view.addSubview(createTrackerButton)
+        view.addSubview(tableView)
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         trackerNameTextField.translatesAutoresizingMaskIntoConstraints = false
         cancelCreateTrackerButton.translatesAutoresizingMaskIntoConstraints = false
         createTrackerButton.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            scrollView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            
-            trackerNameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor),
+         
+            trackerNameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
             trackerNameTextField.heightAnchor.constraint(equalToConstant: 75),
             trackerNameTextField.widthAnchor.constraint(equalToConstant: 150),
             trackerNameTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
@@ -137,31 +134,35 @@ final class SetNewTrackerViewController: UIViewController {
             
             cancelCreateTrackerButton.heightAnchor.constraint(equalToConstant: 60),
             cancelCreateTrackerButton.widthAnchor.constraint(equalToConstant: 166),
-            cancelCreateTrackerButton.bottomAnchor.constraint(equalTo: scrollView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            cancelCreateTrackerButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             cancelCreateTrackerButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             
             createTrackerButton.heightAnchor.constraint(equalToConstant: 60),
             createTrackerButton.leadingAnchor.constraint(equalTo: cancelCreateTrackerButton.trailingAnchor, constant: 8),
             createTrackerButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            createTrackerButton.bottomAnchor.constraint(equalTo: scrollView.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            
+            createTrackerButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
         ])
     }
     
     @objc private func didTapCancelButton() {
         dismiss(animated: true)
+
     }
     
     @objc private func didTapCreateButton() {
+        let uuid = UUID().uuidString
+        guard let trackerName = trackerNameTextField.text else { return }
+        delegate?.routeNewTracker(id: uuid, name: trackerName, schedule: schedule)
+        
         UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: true)
     }
 }
 
-//MARK: - extensions
+//MARK: - Extensions
 
 extension SetNewTrackerViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return self.textLimit(existingText: textField.text, newText: string, limit: 10)
+        return self.textLimit(existingText: textField.text, newText: string, limit: 38)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -187,9 +188,11 @@ extension SetNewTrackerViewController: UITableViewDelegate {
         switch indexPath.row {
         case 0:
             let categoryViewController = CategoryViewController()
+            categoryViewController.delegate = self
             present(categoryViewController, animated: true)
         case 1:
             let scheduleViewController = ScheduleViewController()
+            scheduleViewController.delegate = self
             present(scheduleViewController, animated: true)
         default: break
         }
@@ -213,11 +216,26 @@ extension SetNewTrackerViewController: UITableViewDataSource {
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
-        
         switch indexPath.row {
         case 0: cell.textLabel?.text = "Категория"
-            cell.detailTextLabel?.text = "Selected category"
+            cell.detailTextLabel?.text = "По умолчанию"
         case 1: cell.textLabel?.text = "Расписание"
+            if schedule.isEmpty {
+                cell.detailTextLabel?.text = ""
+            } else if schedule.count == 7 {
+                cell.detailTextLabel?.text = "Каждый день"
+            } else {
+                let sortedSchedule = schedule.sorted { (s1, s2) -> Bool in
+                    let weekdayOrder = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+                    guard let index1 = weekdayOrder.firstIndex(of: s1),
+                          let index2 = weekdayOrder.firstIndex(of: s2) else {
+                        return false
+                    }
+                    return index1 < index2
+                }
+                let orderedDays = sortedSchedule.joined(separator: ", ")
+                cell.detailTextLabel?.text = orderedDays
+            }
         default: break
         }
         return cell
@@ -225,5 +243,19 @@ extension SetNewTrackerViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
+    }
+}
+
+extension SetNewTrackerViewController: ScheduleViewControllerDelegate {
+    func routeSchedule(selectedSchedule: [String]) {
+        schedule = selectedSchedule
+        tableView.reloadData()
+    }
+}
+
+extension SetNewTrackerViewController: CategoryViewControllerDelegate {
+    func routeCategory(newCategory: String) {
+        category = newCategory
+        tableView.reloadData()
     }
 }
