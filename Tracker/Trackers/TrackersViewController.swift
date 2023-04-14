@@ -15,6 +15,9 @@ final class TrackersViewController: UIViewController {
     private var visibleCategories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
     private var newTracker: Tracker?
+    private var categoryName: String?
+    private let setNewTrackerViewController = SetNewTrackerViewController()
+    private let trackersCollectionViewCell = TrackersCollectionViewCell()
     
     private lazy var newTrackerButton: UIButton = {
         let newTrackerButtonImage = UIImage(named: "newTrackerButton")
@@ -45,6 +48,7 @@ final class TrackersViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Поиск"
         searchBar.searchBarStyle = .minimal
+        searchBar.delegate = self
         return searchBar
     }()
     
@@ -67,12 +71,13 @@ final class TrackersViewController: UIViewController {
             collectionViewLayout: UICollectionViewLayout())
         collectionView.register(
             TrackersCollectionViewCell.self,
-            forCellWithReuseIdentifier: TrackersCollectionViewCell().identifier)
+            forCellWithReuseIdentifier: "cell")
         collectionView.register(
             TrackersCellCategoryLabel.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: "header")
         collectionView.backgroundColor = .white
+        collectionView.allowsMultipleSelection = false
         return collectionView
     }()
     
@@ -83,6 +88,8 @@ final class TrackersViewController: UIViewController {
         view.backgroundColor = .white
         collectionView.delegate = self
         collectionView.dataSource = self
+        setNewTrackerViewController.delegate = self
+        trackersCollectionViewCell.delegate = self
         setUI()
         
         if !categories.isEmpty {
@@ -126,7 +133,7 @@ final class TrackersViewController: UIViewController {
             searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             
             collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 24),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
@@ -142,19 +149,51 @@ final class TrackersViewController: UIViewController {
         let newTrackerViewController = NewTrackersViewController()
         present(newTrackerViewController, animated: true)
     }
+    
+    private func createNewTracker(id: String, name: String, schedule: [String], category: String) {
+
+        newTracker = Tracker(id: id, name: name, schedule: schedule)
+        categoryName = category
+//        var tracker = [Tracker]()
+//        guard let newTracker else { return }
+//        tracker.append(newTracker)
+//        let newTrackerCategory = TrackerCategory(name: category, category: tracker)
+//        categories.append(newTrackerCategory)
+//        collectionView.reloadData()
+    }
 }
 
 //MARK: - Extensions
 
 extension TrackersViewController: SetNewTrackerViewControllerDelegate {
-    func routeNewTracker(id: String, name: String, schedule: [String]) {
-        newTracker = Tracker(id: id, name: name, schedule: schedule)
+    func routeNewTracker(id: String, name: String, schedule: [String], category: String) {
+        createNewTracker(id: id, name: name, schedule: schedule, category: category)
+    }
+}
+
+extension TrackersViewController: TrackerCollectionViewCellDelegate {
+    func didTapPlusButton() {
+        
     }
 }
 
 extension TrackersViewController: UISearchBarDelegate {
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
+    
+
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.setShowsCancelButton(true, animated: true)
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        searchBar.setShowsCancelButton(false, animated: true)
+        collectionView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        //TODO: search
+        collectionView.reloadData()
     }
 }
 
@@ -168,11 +207,37 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersCollectionViewCell().identifier, for: indexPath) as? TrackersCollectionViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? TrackersCollectionViewCell else { return UICollectionViewCell() }
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as? TrackersCellCategoryLabel else { return UICollectionReusableView() }
+        return view
     }
 }
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let indexPath = IndexPath(row: 0, section: section)
+        let headerView = self.collectionView(collectionView, viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader, at: indexPath)
+        return headerView.systemLayoutSizeFitting(
+            CGSize(
+                width: collectionView.frame.width,
+                height: UIView.layoutFittingExpandedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel)
+    }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.bounds.width / 2, height: 148)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 9
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 16
+    }
 }

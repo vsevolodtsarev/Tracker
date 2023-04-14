@@ -12,6 +12,7 @@ final class TrackersCellCategoryLabel: UICollectionReusableView {
     
     private lazy var label: UILabel = {
         let label = UILabel()
+        label.text = "Домашний уют"
         label.font = UIFont(name: "YandexSansDisplay-Bold", size: 19)
         return label
     }()
@@ -25,7 +26,7 @@ final class TrackersCellCategoryLabel: UICollectionReusableView {
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: topAnchor),
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
-            label.trailingAnchor.constraint(equalTo: trailingAnchor)
+            label.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
     

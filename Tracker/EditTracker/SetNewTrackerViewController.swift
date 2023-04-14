@@ -9,12 +9,12 @@ import Foundation
 import UIKit
 
 protocol SetNewTrackerViewControllerDelegate: AnyObject {
-    func routeNewTracker(id: String, name: String, schedule: [String])
+    func routeNewTracker(id: String, name: String, schedule: [String], category: String)
 }
 
 final class SetNewTrackerViewController: UIViewController {
     
-    private var category: String?
+    private var category: String = "Тестовая категория"
     private var schedule: [String] = []
     var typeOfTracker: TypeOfTracker?
     weak var delegate: SetNewTrackerViewControllerDelegate?
@@ -70,7 +70,7 @@ final class SetNewTrackerViewController: UIViewController {
         cancelCreateTrackerButton.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
         return cancelCreateTrackerButton
     }()
-
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -89,7 +89,6 @@ final class SetNewTrackerViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setUI()
-
     }
     
     //MARK: - private func
@@ -120,7 +119,7 @@ final class SetNewTrackerViewController: UIViewController {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-         
+            
             trackerNameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 38),
             trackerNameTextField.heightAnchor.constraint(equalToConstant: 75),
             trackerNameTextField.widthAnchor.constraint(equalToConstant: 150),
@@ -146,14 +145,12 @@ final class SetNewTrackerViewController: UIViewController {
     
     @objc private func didTapCancelButton() {
         dismiss(animated: true)
-
     }
     
     @objc private func didTapCreateButton() {
         let uuid = UUID().uuidString
         guard let trackerName = trackerNameTextField.text else { return }
-        delegate?.routeNewTracker(id: uuid, name: trackerName, schedule: schedule)
-        
+        delegate?.routeNewTracker(id: uuid, name: trackerName, schedule: schedule, category: category)
         UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: true)
     }
 }
@@ -171,6 +168,16 @@ extension SetNewTrackerViewController: UITextFieldDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if !(textField.text?.isEmpty ?? false) {
+            createTrackerButton.isEnabled = true
+            createTrackerButton.backgroundColor = .black
+        } else {
+            createTrackerButton.isEnabled = false
+            createTrackerButton.backgroundColor = UIColor(named: "ypGrey")
+        }
     }
     
     private func textLimit(
@@ -218,7 +225,7 @@ extension SetNewTrackerViewController: UITableViewDataSource {
         cell.accessoryType = .disclosureIndicator
         switch indexPath.row {
         case 0: cell.textLabel?.text = "Категория"
-            cell.detailTextLabel?.text = "По умолчанию"
+            cell.detailTextLabel?.text = category
         case 1: cell.textLabel?.text = "Расписание"
             if schedule.isEmpty {
                 cell.detailTextLabel?.text = ""
