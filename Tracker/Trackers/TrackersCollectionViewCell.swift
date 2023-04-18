@@ -15,50 +15,51 @@ protocol TrackerCollectionViewCellDelegate: AnyObject {
 final class TrackersCollectionViewCell: UICollectionViewCell {
     
     weak var delegate: TrackerCollectionViewCellDelegate?
+    static let identifier = "cell"
     
     private lazy var cellView: UIView = {
-       let view = UIView()
-        view.layer.cornerRadius = 16
-        view.backgroundColor = UIColor(named: "Color selection 1")
+        let view = UIView()
+        view.layer.cornerRadius = 17
         return view
     }()
     
     private lazy var emojiLabel: UILabel = {
-       let emojiLabel = UILabel()
+        let emojiLabel = UILabel()
         emojiLabel.backgroundColor = UIColor(named: "emojiBackground")
-        emojiLabel.layer.cornerRadius = 30
-        emojiLabel.text = "❤️"
+        emojiLabel.font = UIFont(name: "YandexSansText-Medium", size: 13)
+        emojiLabel.layer.cornerRadius = 12
+        emojiLabel.clipsToBounds = true
         emojiLabel.textAlignment = .center
         return emojiLabel
     }()
     
     private lazy var  trackerNameLabel: UILabel = {
-       let trackerNameLabel = UILabel()
-        trackerNameLabel.text = "Поливать растения"
+        let trackerNameLabel = UILabel()
         trackerNameLabel.textColor = .white
         trackerNameLabel.font = UIFont(name: "YandexSansText-Medium", size: 12)
         return trackerNameLabel
     }()
     
     private lazy var  countLabel: UILabel = {
-       let countLabel = UILabel()
+        let countLabel = UILabel()
         countLabel.text = "1 день"
         countLabel.font = UIFont(name: "YandexSansText-Medium", size: 12)
         return countLabel
     }()
     
     private lazy var plusButton: UIButton = {
-       let plusButton = UIButton()
-        plusButton.setTitle("􀅼", for: .normal)
-        plusButton.setTitleColor(.white, for: .normal)
-        plusButton.backgroundColor = cellView.backgroundColor
+        let plusButton = UIButton()
+        let image = UIImage(systemName: "plus")
+        plusButton.setImage(image, for: .normal)
+        plusButton.tintColor = .white
+        plusButton.layer.cornerRadius = 17
         plusButton.addTarget(self, action: #selector(didTapPlusButton), for: .touchUpInside)
         return plusButton
     }()
-        
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .red
+        setUI()
     }
     
     required init?(coder: NSCoder) {
@@ -67,6 +68,13 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     
     @objc private func didTapPlusButton() {
         
+    }
+    
+    func configCell(tracker: Tracker) {
+        cellView.backgroundColor = tracker.color
+        emojiLabel.text = tracker.emoji
+        trackerNameLabel.text = tracker.name
+        plusButton.backgroundColor = tracker.color
     }
     
     private func setUI() {
