@@ -33,7 +33,7 @@ struct Tracker {
 
 struct TrackerCategory {
     let name: String
-    let category: [Tracker]
+    let trackers: [Tracker]
 }
 
 struct TrackerRecord: Hashable {

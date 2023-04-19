@@ -67,6 +67,8 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     }
     
     @objc private func didTapPlusButton() {
+        let completeImage = UIImage(systemName: "checkmark")
+        plusButton.setImage(completeImage, for: .normal)
         
     }
     

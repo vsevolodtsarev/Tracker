@@ -8,7 +8,14 @@
 import Foundation
 import UIKit
 
+protocol NewTrackersViewControllerDelegate: AnyObject {
+    func didAcceptButton(tracker: Tracker, category: String)
+}
+
 final class NewTrackersViewController: UIViewController {
+    
+    private let setNewTrackerViewController = SetNewTrackerViewController()
+    weak var delegate:  NewTrackersViewControllerDelegate?
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -77,14 +84,23 @@ final class NewTrackersViewController: UIViewController {
     }
     
     @objc private func didTapHabitButton() {
-        let setNewTrackerViewController = SetNewTrackerViewController()
         setNewTrackerViewController.typeOfTracker = .habit
+        setNewTrackerViewController.delegate = self
         present(setNewTrackerViewController, animated: true)
     }
     
     @objc private func didTapNonRegularEventButton() {
-        let setNewTrackerViewController = SetNewTrackerViewController()
         setNewTrackerViewController.typeOfTracker = .nonRegularEvent
+        setNewTrackerViewController.delegate = self
         present(setNewTrackerViewController, animated: true)
+    }
+}
+
+extension NewTrackersViewController: SetNewTrackerViewControllerDelegate {
+    func didAcceptButton(tracker: Tracker, category: String) {
+        dismiss(animated: true)
+        let tracker = tracker
+        let category = category
+        delegate?.didAcceptButton(tracker: tracker, category: category)
     }
 }

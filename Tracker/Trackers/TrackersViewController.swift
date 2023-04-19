@@ -14,9 +14,6 @@ final class TrackersViewController: UIViewController {
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
-    private var newTracker: Tracker?
-    private var categoryName: String?
-    private let setNewTrackerViewController = SetNewTrackerViewController()
     private let trackersCollectionViewCell = TrackersCollectionViewCell()
     
     var mockTracker: Tracker {
@@ -104,14 +101,9 @@ final class TrackersViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        setNewTrackerViewController.delegate = self
         trackersCollectionViewCell.delegate = self
         setUI()
         
-        if !mockCategory.isEmpty {
-            imagePlaceholder.isHidden = true
-            textPlaceholder.isHidden = true
-        }
     }
     
     //MARK: - private func
@@ -163,27 +155,27 @@ final class TrackersViewController: UIViewController {
     
     @objc private func didTapNewTrackerButton() {
         let newTrackerViewController = NewTrackersViewController()
+        newTrackerViewController.delegate = self
         present(newTrackerViewController, animated: true)
-    }
-    
-    private func createNewTracker(id: String, name: String, schedule: [String], category: String) {
-        
-        //        newTracker = Tracker(id: id, name: name, schedule: schedule)
-        //        categoryName = category
-        //        var tracker = [Tracker]()
-        //        guard let newTracker else { return }
-        //        tracker.append(newTracker)
-        //        let newTrackerCategory = TrackerCategory(name: category, category: tracker)
-        //        categories.append(newTrackerCategory)
-        //        collectionView.reloadData()
     }
 }
 
 //MARK: - Extensions
 
-extension TrackersViewController: SetNewTrackerViewControllerDelegate {
-    func routeNewTracker(id: String, name: String, schedule: [String], category: String) {
-        createNewTracker(id: id, name: name, schedule: schedule, category: category)
+extension TrackersViewController: NewTrackersViewControllerDelegate {
+    func didAcceptButton(tracker: Tracker, category: String) {
+        dismiss(animated: true)
+        
+        let newTrackerCategory = TrackerCategory(name: category, trackers: [tracker])
+        categories.append(newTrackerCategory)
+        print(categories)
+        
+        if !categories.isEmpty {
+            imagePlaceholder.isHidden = true
+            textPlaceholder.isHidden = true
+        }
+        
+        collectionView.reloadData()
     }
 }
 
@@ -194,8 +186,6 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
 }
 
 extension TrackersViewController: UISearchBarDelegate {
-    
-    
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         searchBar.setShowsCancelButton(true, animated: true)
         return true
@@ -215,23 +205,24 @@ extension TrackersViewController: UISearchBarDelegate {
 
 extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        mockArray.count
+        return categories[section].trackers.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return mockCategory.count
+        return categories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersCollectionViewCell.identifier, for: indexPath) as? TrackersCollectionViewCell else { return UICollectionViewCell() }
+        let tracker = categories[indexPath.section].trackers[indexPath.row]
         cell.delegate = self
-        cell.configCell(tracker: mockArray[indexPath.row])
+        cell.configCell(tracker: tracker)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as? TrackersCellCategoryLabel else { return UICollectionReusableView() }
-        view.configHeader(category: mockCategory[indexPath.section])
+        view.configHeader(category: categories[indexPath.section].name)
         return view
     }
 }
