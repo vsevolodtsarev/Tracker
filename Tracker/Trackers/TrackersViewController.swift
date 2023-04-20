@@ -10,26 +10,12 @@ import UIKit
 
 final class TrackersViewController: UIViewController {
     
-    private var currentDate: Date?
+    private var currentDate = Date()
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
-    private let trackersCollectionViewCell = TrackersCollectionViewCell()
-    
-    var mockTracker: Tracker {
-        return Tracker(id: "testID", name: "Test Tracker", emoji: "🐻", color: .gray, schedule: ["Sunday"])
-    }
-    var  mockTracker2: Tracker {
-        return Tracker(id: "testID2", name: "Test Tracker2", emoji: "🤪", color: .blue, schedule: ["Sunday"])
-    }
-    var  mockArray: [Tracker] {
-        return [mockTracker, mockTracker2]
-    }
-    
-    let mockCategory: [String] = ["Домашний уют", "Радостные мелочи", "Самочувствие"]
-    
-    
-    
+//    private let trackersCollectionViewCell = TrackersCollectionViewCell()
+     
     private lazy var newTrackerButton: UIButton = {
         let newTrackerButtonImage = UIImage(named: "newTrackerButton")
         let newTrackerButton = UIButton.systemButton(
@@ -101,7 +87,7 @@ final class TrackersViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        trackersCollectionViewCell.delegate = self
+//        trackersCollectionViewCell.delegate = self
         setUI()
         
     }
@@ -132,7 +118,7 @@ final class TrackersViewController: UIViewController {
             trackersLabel.topAnchor.constraint(equalTo: newTrackerButton.bottomAnchor, constant: 13),
             trackersLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             
-            datePicker.widthAnchor.constraint(equalToConstant: 95),
+            datePicker.widthAnchor.constraint(equalToConstant: 100),
             datePicker.topAnchor.constraint(equalTo: newTrackerButton.bottomAnchor, constant: 16),
             datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
@@ -167,21 +153,39 @@ extension TrackersViewController: NewTrackersViewControllerDelegate {
         dismiss(animated: true)
         
         let newTrackerCategory = TrackerCategory(name: category, trackers: [tracker])
-        categories.append(newTrackerCategory)
-        print(categories)
+        if categories.contains(where: { $0.name == newTrackerCategory.name }) {
+            guard let index = categories.firstIndex(where: { $0.name == newTrackerCategory.name }) else { return }
+            let oldTrackerCategory = categories[index]
+            let updatedTrackers = oldTrackerCategory.trackers + newTrackerCategory.trackers
+            let updatedTrackerCategory = TrackerCategory(name: newTrackerCategory.name, trackers: updatedTrackers)
+            categories[index] = updatedTrackerCategory
+        } else if !categories.contains(where: { $0.name == newTrackerCategory.name }) {
+            categories.append(newTrackerCategory)
+        }
         
         if !categories.isEmpty {
             imagePlaceholder.isHidden = true
             textPlaceholder.isHidden = true
         }
-        
+        visibleCategories = categories
         collectionView.reloadData()
     }
 }
 
 extension TrackersViewController: TrackerCollectionViewCellDelegate {
-    func didTapPlusButton() {
-        
+    func didTapPlusButton(cell: TrackersCollectionViewCell) {
+        guard let indexPath: IndexPath = collectionView.indexPath(for: cell) else { return }
+        let id = visibleCategories[indexPath.section].trackers[indexPath.row].id
+        var daysCount = completedTrackers.filter { $0.id == id }.count
+        if !completedTrackers.contains(where: { $0.id == id && $0.date == currentDate }) {
+            completedTrackers.insert(TrackerRecord(id: id, date: currentDate))
+            daysCount += 1
+            cell.configRecord(days: daysCount, isDone: true)
+        } else {
+            completedTrackers.remove(TrackerRecord(id: id, date: currentDate))
+            daysCount -= 1
+            cell.configRecord(days: daysCount, isDone: false)
+        }
     }
 }
 
@@ -205,18 +209,21 @@ extension TrackersViewController: UISearchBarDelegate {
 
 extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return categories[section].trackers.count
+        return visibleCategories[section].trackers.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return categories.count
+        return visibleCategories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackersCollectionViewCell.identifier, for: indexPath) as? TrackersCollectionViewCell else { return UICollectionViewCell() }
-        let tracker = categories[indexPath.section].trackers[indexPath.row]
-        cell.delegate = self
+        let tracker = visibleCategories[indexPath.section].trackers[indexPath.row]
+        let daysCount = completedTrackers.filter { $0.id == tracker.id }.count
+        let isDone = completedTrackers.contains { $0.id == tracker.id && $0.date == currentDate }
         cell.configCell(tracker: tracker)
+        cell.configRecord(days: daysCount, isDone: isDone)
+        cell.delegate = self
         return cell
     }
     

@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol TrackerCollectionViewCellDelegate: AnyObject {
-    func didTapPlusButton()
+    func didTapPlusButton(cell: TrackersCollectionViewCell)
 }
 
 final class TrackersCollectionViewCell: UICollectionViewCell {
@@ -67,9 +67,36 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     }
     
     @objc private func didTapPlusButton() {
-        let completeImage = UIImage(systemName: "checkmark")
-        plusButton.setImage(completeImage, for: .normal)
+        delegate?.didTapPlusButton(cell: self)
         
+    }
+    
+    func configRecord(days: Int, isDone: Bool) {
+        configPlusButtonImage(isDone: isDone)
+        configCountLabel(days: days)
+    }
+    
+    private func configPlusButtonImage(isDone: Bool) {
+        if isDone {
+            let image = UIImage(systemName: "checkmark")
+            plusButton.setImage(image, for: .normal)
+            plusButton.layer.opacity = 0.3
+        } else {
+            let image = UIImage(systemName: "plus")
+            plusButton.setImage(image, for: .normal)
+            plusButton.layer.opacity = 1
+        }
+    }
+    
+    private func configCountLabel(days: Int) {
+        switch days % 10 {
+        case 1:
+            countLabel.text = "\(days) день"
+        case 2...4:
+            countLabel.text = "\(days) дня"
+        default:
+            countLabel.text = "\(days) дней"
+        }
     }
     
     func configCell(tracker: Tracker) {

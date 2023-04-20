@@ -14,12 +14,12 @@ protocol SetNewTrackerViewControllerDelegate: AnyObject {
 
 final class SetNewTrackerViewController: UIViewController {
     
-    private var category: String = "Тестовая категория" //Mock category
+    private var category: String = ["Домашний уют", "Радостные моменты", "Самочувствие"].randomElement()! //Mock category
     private var schedule: [String] = []
-    private var emoji: [String] = ["🦊", "❤️", "🤡", "🐹", "🤪"] //Mock emoji
+    private var emoji: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ] //Mock emoji
     private var color: [UIColor] = [UIColor(named: "Color selection 11")!, UIColor(named: "Color selection 12")!, UIColor(named: "Color selection 1")!, UIColor(named: "Color selection 2")!] //Mock color
-    var typeOfTracker: TypeOfTracker?
     weak var delegate: SetNewTrackerViewControllerDelegate?
+    var typeOfTracker: TypeOfTracker?
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -146,15 +146,17 @@ final class SetNewTrackerViewController: UIViewController {
     }
     
     @objc private func didTapCancelButton() {
+        typeOfTracker = nil
         dismiss(animated: true)
     }
     
     @objc private func didTapCreateButton() {
-        let uuid = UUID().uuidString
+        let uuid = UUID()
         guard let trackerName = trackerNameTextField.text else { return }
         guard let emoji = emoji.randomElement() else { return }
         guard let color = color.randomElement() else { return }
         let tracker = Tracker(id: uuid, name: trackerName, emoji: emoji, color: color, schedule: schedule)
+        print(tracker)
         delegate?.didAcceptButton(tracker: tracker, category: category)
     }
 }

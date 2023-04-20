@@ -24,7 +24,7 @@ enum WeekDay: String, CaseIterable {
 }
 
 struct Tracker {
-    let id: String
+    let id: UUID
     let name: String
     let emoji: String
     let color: UIColor
