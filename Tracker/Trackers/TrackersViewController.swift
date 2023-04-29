@@ -14,8 +14,8 @@ final class TrackersViewController: UIViewController {
     private var categories: [TrackerCategory] = []
     private var visibleCategories: [TrackerCategory] = []
     private var completedTrackers: Set<TrackerRecord> = []
-//    private let trackersCollectionViewCell = TrackersCollectionViewCell()
-     
+    
+    
     private lazy var newTrackerButton: UIButton = {
         let newTrackerButtonImage = UIImage(named: "newTrackerButton")
         let newTrackerButton = UIButton.systemButton(
@@ -38,6 +38,8 @@ final class TrackersViewController: UIViewController {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
         datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.calendar = Calendar(identifier: .iso8601)
+        datePicker.addTarget(self, action: #selector(datePickerDidChange), for: .valueChanged)
         return datePicker
     }()
     
@@ -86,9 +88,9 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
-//        trackersCollectionViewCell.delegate = self
+        visibleCategories = categories
         setUI()
+        checkCategoryIsEmpty()
         
     }
     
@@ -139,12 +141,70 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
+    private func checkCategoryIsEmpty() {
+        if !visibleCategories.isEmpty {
+            imagePlaceholder.isHidden = true
+            textPlaceholder.isHidden = true
+        } else {
+            imagePlaceholder.isHidden = false
+            textPlaceholder.isHidden = false
+        }
+    }
+    
     @objc private func didTapNewTrackerButton() {
         let newTrackerViewController = NewTrackersViewController()
         newTrackerViewController.delegate = self
         present(newTrackerViewController, animated: true)
     }
+    
+    @objc private func datePickerDidChange(_ sender: UIDatePicker) {
+        let weekday = sender.calendar.component(.weekday, from: sender.date)
+        
+        var day = ""
+        switch weekday {
+        case 1: day = "Вс"
+        case 2: day = "Пн"
+        case 3: day = "Вт"
+        case 4: day = "Ср"
+        case 5: day = "Чт"
+        case 6: day = "Пт"
+        case 7: day = "Сб"
+        default: break
+        }
+        
+        var interimTrackerСategory = categories
+        for category in categories {
+            var filterTrackers: [Tracker] = []
+            for tracker in category.trackers {
+                if let schedule = tracker.schedule {
+                    if schedule.contains(where: { $0 == day }) {
+                        filterTrackers.append(tracker)
+                    }
+                }
+            }
+            
+            let newCategory = TrackerCategory(name: category.name, trackers: filterTrackers)
+            if newCategory.name == category.name {
+                guard let index = categories.firstIndex(where: { $0.name == newCategory.name }) else { return }
+                categories[index] = newCategory
+            }
+        }
+        
+        for category in categories {
+            if category.trackers.isEmpty {
+                let index = categories.firstIndex(where: { $0.trackers.isEmpty })!
+                categories.remove(at: index)
+            }
+        }
+        visibleCategories = categories
+        checkCategoryIsEmpty()
+        collectionView.reloadData()
+        dismiss(animated: true) {
+            self.categories = interimTrackerСategory
+        }
+    }
 }
+
 
 //MARK: - Extensions
 
@@ -163,11 +223,8 @@ extension TrackersViewController: NewTrackersViewControllerDelegate {
             categories.append(newTrackerCategory)
         }
         
-        if !categories.isEmpty {
-            imagePlaceholder.isHidden = true
-            textPlaceholder.isHidden = true
-        }
         visibleCategories = categories
+        checkCategoryIsEmpty()
         collectionView.reloadData()
     }
 }
@@ -189,7 +246,7 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
     }
 }
 
-extension TrackersViewController: UISearchBarDelegate {
+extension TrackersViewController: UISearchBarDelegate, UITextFieldDelegate {
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         searchBar.setShowsCancelButton(true, animated: true)
         return true
@@ -197,12 +254,28 @@ extension TrackersViewController: UISearchBarDelegate {
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.endEditing(true)
+        searchBar.text = ""
         searchBar.setShowsCancelButton(false, animated: true)
         collectionView.reloadData()
     }
     
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        visibleCategories = categories
+        collectionView.reloadData()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        //TODO: search
+        if searchText.isEmpty || searchText == "" {
+            checkCategoryIsEmpty()
+        } else {
+            visibleCategories = visibleCategories.filter({ trackersCategory in
+                let filteredTrackers = trackersCategory.trackers.filter { $0.name.range(of: searchText, options: .caseInsensitive) != nil }
+                return !filteredTrackers.isEmpty
+            }).map { category in
+                TrackerCategory(name: category.name, trackers: category.trackers.filter { $0.name.range(of: searchText, options: .caseInsensitive) != nil })
+            }
+            
+        }
         collectionView.reloadData()
     }
 }

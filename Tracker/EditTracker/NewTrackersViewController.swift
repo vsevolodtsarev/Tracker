@@ -16,7 +16,7 @@ final class NewTrackersViewController: UIViewController {
     
     
     weak var delegate:  NewTrackersViewControllerDelegate?
-
+    
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()

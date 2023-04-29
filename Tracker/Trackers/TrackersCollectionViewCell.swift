@@ -42,7 +42,7 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     
     private lazy var  countLabel: UILabel = {
         let countLabel = UILabel()
-        countLabel.text = "1 день"
+        countLabel.text = "0 дней"
         countLabel.font = UIFont(name: "YandexSansText-Medium", size: 12)
         return countLabel
     }()
