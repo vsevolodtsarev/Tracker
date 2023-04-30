@@ -9,13 +9,13 @@ import Foundation
 import UIKit
 
 protocol ScheduleViewControllerDelegate: AnyObject {
-    func routeSchedule(selectedSchedule: [String])
+    func routeSchedule(selectedSchedule: [WeekDay])
 }
 
 final class ScheduleViewController: UIViewController {
     
     weak var delegate: ScheduleViewControllerDelegate?
-    private var selectedSchedule: [String] = []
+    private var selectedSchedule: [WeekDay] = []
     private let weekday = WeekDay.allCases
     
     private lazy var titleLabel: UILabel = {
@@ -130,13 +130,13 @@ extension ScheduleViewController: UITableViewDataSource {
     @objc private func didSwitchIsOn(_ sender: UISwitch) {
         if sender.isOn {
             switch sender.tag {
-            case 0: selectedSchedule.append("Пн")
-            case 1: selectedSchedule.append("Вт")
-            case 2: selectedSchedule.append("Ср")
-            case 3: selectedSchedule.append("Чт")
-            case 4: selectedSchedule.append("Пт")
-            case 5: selectedSchedule.append("Сб")
-            case 6: selectedSchedule.append("Вс")
+            case 0: selectedSchedule.append(WeekDay.monday)
+            case 1: selectedSchedule.append(WeekDay.tuesday)
+            case 2: selectedSchedule.append(WeekDay.wednesday)
+            case 3: selectedSchedule.append(WeekDay.thursday)
+            case 4: selectedSchedule.append(WeekDay.friday)
+            case 5: selectedSchedule.append(WeekDay.saturday)
+            case 6: selectedSchedule.append(WeekDay.sunday)
             default: break
             }
             
@@ -144,13 +144,13 @@ extension ScheduleViewController: UITableViewDataSource {
             
         } else {
             switch sender.tag {
-            case 0: selectedSchedule.removeAll { $0 == "Пн" }
-            case 1: selectedSchedule.removeAll { $0 == "Вт" }
-            case 2: selectedSchedule.removeAll { $0 == "Ср" }
-            case 3: selectedSchedule.removeAll { $0 == "Чт" }
-            case 4: selectedSchedule.removeAll { $0 == "Пт" }
-            case 5: selectedSchedule.removeAll { $0 == "Сб" }
-            case 6: selectedSchedule.removeAll { $0 == "Вс" }
+            case 0: selectedSchedule.removeAll { $0 == WeekDay.monday }
+            case 1: selectedSchedule.removeAll { $0 == WeekDay.tuesday }
+            case 2: selectedSchedule.removeAll { $0 == WeekDay.wednesday }
+            case 3: selectedSchedule.removeAll { $0 == WeekDay.thursday }
+            case 4: selectedSchedule.removeAll { $0 == WeekDay.friday }
+            case 5: selectedSchedule.removeAll { $0 == WeekDay.saturday }
+            case 6: selectedSchedule.removeAll { $0 == WeekDay.sunday }
             default: break
             }
             

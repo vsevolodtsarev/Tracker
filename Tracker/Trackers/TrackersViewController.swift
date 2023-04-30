@@ -158,26 +158,16 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func datePickerDidChange(_ sender: UIDatePicker) {
-        let weekday = sender.calendar.component(.weekday, from: sender.date)
+        let currentWeekday = sender.calendar.component(.weekday, from: sender.date)
+        let interimTrackerСategory = categories
         
-        var day = ""
-        switch weekday {
-        case 1: day = "Вс"
-        case 2: day = "Пн"
-        case 3: day = "Вт"
-        case 4: day = "Ср"
-        case 5: day = "Чт"
-        case 6: day = "Пт"
-        case 7: day = "Сб"
-        default: break
-        }
-        
-        var interimTrackerСategory = categories
         for category in categories {
             var filterTrackers: [Tracker] = []
             for tracker in category.trackers {
                 if let schedule = tracker.schedule {
-                    if schedule.contains(where: { $0 == day }) {
+                    if schedule.contains(where: { weekDay in
+                        return currentWeekday == weekDay.orderDay
+                    }) {
                         filterTrackers.append(tracker)
                     }
                 }
@@ -192,7 +182,7 @@ final class TrackersViewController: UIViewController {
         
         for category in categories {
             if category.trackers.isEmpty {
-                let index = categories.firstIndex(where: { $0.trackers.isEmpty })!
+                guard let index = categories.firstIndex(where: { $0.trackers.isEmpty }) else { return }
                 categories.remove(at: index)
             }
         }
@@ -256,11 +246,13 @@ extension TrackersViewController: UISearchBarDelegate, UITextFieldDelegate {
         searchBar.endEditing(true)
         searchBar.text = ""
         searchBar.setShowsCancelButton(false, animated: true)
+        checkCategoryIsEmpty()
         collectionView.reloadData()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         visibleCategories = categories
+        checkCategoryIsEmpty()
         collectionView.reloadData()
     }
     

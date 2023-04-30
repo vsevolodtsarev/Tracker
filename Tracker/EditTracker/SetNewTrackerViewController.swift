@@ -15,7 +15,7 @@ protocol SetNewTrackerViewControllerDelegate: AnyObject {
 final class SetNewTrackerViewController: UIViewController {
     
     private var category: String = ["Домашний уют", "Радостные моменты", "Самочувствие"].randomElement()! //Mock category
-    private var schedule: [String] = []
+    private var schedule: [WeekDay] = []
     private var emoji: String = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ].randomElement()! //Mock emoji
     private var color: UIColor = [UIColor(named: "Color selection 11")!, UIColor(named: "Color selection 12")!, UIColor(named: "Color selection 1")!, UIColor(named: "Color selection 2")!].randomElement()! //Mock color
     weak var delegate: SetNewTrackerViewControllerDelegate?
@@ -234,15 +234,8 @@ extension SetNewTrackerViewController: UITableViewDataSource {
             } else if schedule.count == 7 {
                 cell.detailTextLabel?.text = "Каждый день"
             } else {
-                let sortedSchedule = schedule.sorted { (s1, s2) -> Bool in
-                    let weekdayOrder = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
-                    guard let index1 = weekdayOrder.firstIndex(of: s1),
-                          let index2 = weekdayOrder.firstIndex(of: s2) else {
-                        return false
-                    }
-                    return index1 < index2
-                }
-                let orderedDays = sortedSchedule.joined(separator: ", ")
+                let sortedSchedule = schedule.sorted { $0.orderDay < $1.orderDay}
+                let orderedDays = sortedSchedule.compactMap { $0.shortName }.joined(separator: ", ")
                 cell.detailTextLabel?.text = orderedDays
             }
         default: break
@@ -256,7 +249,7 @@ extension SetNewTrackerViewController: UITableViewDataSource {
 }
 
 extension SetNewTrackerViewController: ScheduleViewControllerDelegate {
-    func routeSchedule(selectedSchedule: [String]) {
+    func routeSchedule(selectedSchedule: [WeekDay]) {
         schedule = selectedSchedule
         tableView.reloadData()
     }
