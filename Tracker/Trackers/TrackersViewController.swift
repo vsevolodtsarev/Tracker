@@ -88,10 +88,8 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        visibleCategories = categories
         setUI()
-        checkCategoryIsEmpty()
-        
+        addToVisibleCategory()
     }
     
     //MARK: - private func
@@ -151,6 +149,20 @@ final class TrackersViewController: UIViewController {
         }
     }
     
+    private func addToVisibleCategory() {
+        let currentWeekday = datePicker.calendar.component(.weekday, from: currentDate)
+        visibleCategories = categories.filter { trackerCategory in
+            trackerCategory.trackers.contains { tracker in
+                guard let schedule = tracker.schedule else { return false }
+                return schedule.contains { weekday in
+                    weekday.orderDay == currentWeekday
+                }
+            }
+        }
+        checkCategoryIsEmpty()
+        collectionView.reloadData()
+    }
+    
     @objc private func didTapNewTrackerButton() {
         let newTrackerViewController = NewTrackersViewController()
         newTrackerViewController.delegate = self
@@ -158,39 +170,11 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func datePickerDidChange(_ sender: UIDatePicker) {
-        let currentWeekday = sender.calendar.component(.weekday, from: sender.date)
-        let interimTrackerСategory = categories
-        
-        for category in categories {
-            var filterTrackers: [Tracker] = []
-            for tracker in category.trackers {
-                if let schedule = tracker.schedule {
-                    if schedule.contains(where: { weekDay in
-                        return currentWeekday == weekDay.orderDay
-                    }) {
-                        filterTrackers.append(tracker)
-                    }
-                }
-            }
-            
-            let newCategory = TrackerCategory(name: category.name, trackers: filterTrackers)
-            if newCategory.name == category.name {
-                guard let index = categories.firstIndex(where: { $0.name == newCategory.name }) else { return }
-                categories[index] = newCategory
-            }
-        }
-        
-        for category in categories {
-            if category.trackers.isEmpty {
-                guard let index = categories.firstIndex(where: { $0.trackers.isEmpty }) else { return }
-                categories.remove(at: index)
-            }
-        }
-        visibleCategories = categories
-        checkCategoryIsEmpty()
-        collectionView.reloadData()
+        currentDate = datePicker.date
+        let interimTrackerCategory = categories
+        addToVisibleCategory()
         dismiss(animated: true) {
-            self.categories = interimTrackerСategory
+            self.categories = interimTrackerCategory
         }
     }
 }
@@ -202,20 +186,17 @@ extension TrackersViewController: NewTrackersViewControllerDelegate {
     func didAcceptButton(tracker: Tracker, category: String) {
         dismiss(animated: true)
         
-        let newTrackerCategory = TrackerCategory(name: category, trackers: [tracker])
-        if categories.contains(where: { $0.name == newTrackerCategory.name }) {
-            guard let index = categories.firstIndex(where: { $0.name == newTrackerCategory.name }) else { return }
-            let oldTrackerCategory = categories[index]
-            let updatedTrackers = oldTrackerCategory.trackers + newTrackerCategory.trackers
-            let updatedTrackerCategory = TrackerCategory(name: newTrackerCategory.name, trackers: updatedTrackers)
-            categories[index] = updatedTrackerCategory
-        } else if !categories.contains(where: { $0.name == newTrackerCategory.name }) {
-            categories.append(newTrackerCategory)
-        }
-        
-        visibleCategories = categories
-        checkCategoryIsEmpty()
-        collectionView.reloadData()
+                if categories.contains(where: { $0.name == category }) {
+                    guard let index = categories.firstIndex(where: { $0.name == category }) else { return }
+                    let updatedTrackers = categories[index].trackers + [tracker]
+                    let updatedTrackerCategory = TrackerCategory(name: category, trackers: updatedTrackers)
+                    categories[index] = updatedTrackerCategory
+                } else {
+                    let newTrackerCategory = TrackerCategory(name: category, trackers: [tracker])
+                    categories.append(newTrackerCategory)
+                }
+
+        addToVisibleCategory()
     }
 }
 
@@ -246,19 +227,16 @@ extension TrackersViewController: UISearchBarDelegate, UITextFieldDelegate {
         searchBar.endEditing(true)
         searchBar.text = ""
         searchBar.setShowsCancelButton(false, animated: true)
-        checkCategoryIsEmpty()
-        collectionView.reloadData()
+        addToVisibleCategory()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        visibleCategories = categories
-        checkCategoryIsEmpty()
-        collectionView.reloadData()
+        addToVisibleCategory()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchText.isEmpty || searchText == "" {
-            checkCategoryIsEmpty()
+            addToVisibleCategory()
         } else {
             visibleCategories = visibleCategories.filter({ trackersCategory in
                 let filteredTrackers = trackersCategory.trackers.filter { $0.name.range(of: searchText, options: .caseInsensitive) != nil }
@@ -294,7 +272,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as? TrackersCellCategoryLabel else { return UICollectionReusableView() }
-        view.configHeader(category: categories[indexPath.section].name)
+        view.configHeader(category: visibleCategories[indexPath.section].name)
         return view
     }
 }
