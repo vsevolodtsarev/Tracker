@@ -14,10 +14,12 @@ protocol SetNewTrackerViewControllerDelegate: AnyObject {
 
 final class SetNewTrackerViewController: UIViewController {
     
-    private var category: String = ["Домашний уют", "Радостные моменты", "Самочувствие"].randomElement()! //Mock category
+    private var category: String = ["Домашний уют"].randomElement()! //Mock category
     private var schedule: [WeekDay] = []
-    private var emoji: String = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ].randomElement()! //Mock emoji
-    private var color: UIColor = [UIColor(named: "Color selection 11")!, UIColor(named: "Color selection 12")!, UIColor(named: "Color selection 1")!, UIColor(named: "Color selection 2")!].randomElement()! //Mock color
+    private let mockEmoji: String = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ].randomElement()! //Mock emoji
+    private let emoji: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ]
+    private let mockColor: UIColor = [UIColor(named: "Color selection 11")!, UIColor(named: "Color selection 12")!, UIColor(named: "Color selection 1")!, UIColor(named: "Color selection 2")!].randomElement()! //Mock color
+    private let colors: [UIColor] = [UIColor.color1, UIColor.color2, UIColor.color3, UIColor.color4, UIColor.color5, UIColor.color6, UIColor.color7, UIColor.color8, UIColor.color9, UIColor.color10, UIColor.color11, UIColor.color12, UIColor.color13, UIColor.color14, UIColor.color15, UIColor.color16, UIColor.color17, UIColor.color18]
     weak var delegate: SetNewTrackerViewControllerDelegate?
     var typeOfTracker: TypeOfTracker?
     
@@ -83,6 +85,36 @@ final class SetNewTrackerViewController: UIViewController {
         tableView.backgroundColor = UIColor(named: "ypLightBackgroundGrey")
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         return tableView
+    }()
+    
+    private lazy var emojiCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.register(SetNewTrackerEmojiCell.self, forCellWithReuseIdentifier: SetNewTrackerEmojiCell.identifier)
+        collectionView.register(
+            SetNewTrackerCollectionViewHeader.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: "header")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.isScrollEnabled = false
+        return collectionView
+    }()
+    
+    private lazy var colorCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.register(SetNewTrackerColorCell.self, forCellWithReuseIdentifier: SetNewTrackerColorCell.identifier)
+        collectionView.register(
+            SetNewTrackerCollectionViewHeader.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: "header")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.allowsMultipleSelection = false
+        collectionView.isScrollEnabled = false
+        return collectionView
     }()
     
     //MARK: - viewDidLoad
@@ -152,12 +184,40 @@ final class SetNewTrackerViewController: UIViewController {
     @objc private func didTapCreateButton() {
         let uuid = UUID()
         guard let trackerName = trackerNameTextField.text else { return }
-        let tracker = Tracker(id: uuid, name: trackerName, emoji: emoji, color: color, schedule: schedule)
+        let tracker = Tracker(id: uuid, name: trackerName, emoji: mockEmoji, color: mockColor, schedule: schedule)
         delegate?.didAcceptButton(tracker: tracker, category: category)
     }
 }
 
 //MARK: - Extensions
+
+extension SetNewTrackerViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if collectionView == emojiCollectionView {
+            return emoji.count
+        } else {
+            return colors.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if collectionView == emojiCollectionView {
+            guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: SetNewTrackerEmojiCell.identifier, for: indexPath) as? SetNewTrackerEmojiCell else { return UICollectionViewCell() }
+            return emojiCell
+        } else {
+            guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: SetNewTrackerColorCell.identifier, for: indexPath) as? SetNewTrackerColorCell else { return UICollectionViewCell() }
+                return colorCell
+        }
+    }
+}
+
+//extension SetNewTrackerViewController: UICollectionViewFlowLayout {
+//
+//}
+
+extension SetNewTrackerViewController: UICollectionViewDelegate {
+    
+}
 
 extension SetNewTrackerViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
