@@ -129,31 +129,10 @@ extension ScheduleViewController: UITableViewDataSource {
     
     @objc private func didSwitchIsOn(_ sender: UISwitch) {
         if sender.isOn {
-            switch sender.tag {
-            case 0: selectedSchedule.append(WeekDay.monday)
-            case 1: selectedSchedule.append(WeekDay.tuesday)
-            case 2: selectedSchedule.append(WeekDay.wednesday)
-            case 3: selectedSchedule.append(WeekDay.thursday)
-            case 4: selectedSchedule.append(WeekDay.friday)
-            case 5: selectedSchedule.append(WeekDay.saturday)
-            case 6: selectedSchedule.append(WeekDay.sunday)
-            default: break
-            }
-            
+            selectedSchedule.append(WeekDay.allCases[sender.tag])
             configureAcceptButton()
-            
-        } else {
-            switch sender.tag {
-            case 0: selectedSchedule.removeAll { $0 == WeekDay.monday }
-            case 1: selectedSchedule.removeAll { $0 == WeekDay.tuesday }
-            case 2: selectedSchedule.removeAll { $0 == WeekDay.wednesday }
-            case 3: selectedSchedule.removeAll { $0 == WeekDay.thursday }
-            case 4: selectedSchedule.removeAll { $0 == WeekDay.friday }
-            case 5: selectedSchedule.removeAll { $0 == WeekDay.saturday }
-            case 6: selectedSchedule.removeAll { $0 == WeekDay.sunday }
-            default: break
-            }
-            
+            } else {
+                selectedSchedule.removeAll { $0 == WeekDay.allCases[sender.tag]}
             configureAcceptButton()
         }
     }
