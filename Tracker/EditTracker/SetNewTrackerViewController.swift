@@ -14,7 +14,7 @@ protocol SetNewTrackerViewControllerDelegate: AnyObject {
 
 final class SetNewTrackerViewController: UIViewController {
     
-    private var category: String = ["Домашний уют"].randomElement()! //Mock category
+    private var category: String = ["Домашний уют", "Спорт", "Уборка"].randomElement()! //Mock category
     private var schedule: [WeekDay] = []
     private let mockEmoji: String = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ].randomElement()! //Mock emoji
     private let emoji: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ]

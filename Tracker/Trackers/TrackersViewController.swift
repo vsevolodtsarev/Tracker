@@ -158,11 +158,19 @@ final class TrackersViewController: UIViewController {
                     weekday.orderDay == currentWeekday
                 }
             }
+        }.map { trackerCategory in
+            let filteredTrackers = trackerCategory.trackers.filter { tracker in
+                guard let schedule = tracker.schedule else { return false }
+                return schedule.contains { weekday in
+                    weekday.orderDay == currentWeekday
+                }
+            }
+            return TrackerCategory(name: trackerCategory.name, trackers: filteredTrackers)
         }
         checkCategoryIsEmpty()
         collectionView.reloadData()
     }
-    
+
     @objc private func didTapNewTrackerButton() {
         let newTrackerViewController = NewTrackersViewController()
         newTrackerViewController.delegate = self
@@ -171,10 +179,8 @@ final class TrackersViewController: UIViewController {
     
     @objc private func datePickerDidChange(_ sender: UIDatePicker) {
         currentDate = datePicker.date
-        let interimTrackerCategory = categories
         addToVisibleCategory()
         dismiss(animated: true) {
-            self.categories = interimTrackerCategory
         }
     }
 }
