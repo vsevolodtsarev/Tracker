@@ -25,7 +25,7 @@ final class TrackersCollectionViewCell: UICollectionViewCell {
     
     private lazy var emojiLabel: UILabel = {
         let emojiLabel = UILabel()
-        emojiLabel.backgroundColor = UIColor(named: "emojiBackground")
+        emojiLabel.backgroundColor = .white.withAlphaComponent(0.3)
         emojiLabel.font = UIFont(name: "YandexSansText-Medium", size: 13)
         emojiLabel.layer.cornerRadius = 12
         emojiLabel.clipsToBounds = true
