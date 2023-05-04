@@ -27,5 +27,6 @@ extension UIColor {
     static let color16 = UIColor(named: "Color selection 16") ?? UIColor.clear
     static let color17 = UIColor(named: "Color selection 17") ?? UIColor.clear
     static let color18 = UIColor(named: "Color selection 18") ?? UIColor.clear
+    static let emojiBackground = UIColor(named: "emojiBackground") ?? UIColor.clear
 }
 

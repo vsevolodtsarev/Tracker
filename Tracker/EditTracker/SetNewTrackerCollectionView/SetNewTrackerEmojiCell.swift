@@ -8,15 +8,19 @@
 import Foundation
 import UIKit
 
+protocol DidTapCellProtocol: AnyObject {
+    func didSelect(cell: UICollectionViewCell)
+    func didDeselect(cell: UICollectionViewCell)
+}
+
 final class SetNewTrackerEmojiCell: UICollectionViewCell {
     static let identifier = "emoji"
+    weak var delegate: DidTapCellProtocol?
     
     private lazy var emojiLabel: UILabel = {
         let emojiLabel = UILabel()
-        emojiLabel.text = "😀"
         emojiLabel.font = UIFont(name: "YandexSansDisplay-Bold", size: 32)
-        emojiLabel.layer.cornerRadius = 16
-        translatesAutoresizingMaskIntoConstraints = false
+        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
        return emojiLabel
     }()
 
@@ -36,4 +40,22 @@ final class SetNewTrackerEmojiCell: UICollectionViewCell {
     func configEmojiCell(emoji: String) {
         emojiLabel.text = emoji
     }
+    
+    func getEmoji() -> String? {
+        return emojiLabel.text
+    }
+}
+
+extension SetNewTrackerEmojiCell: DidTapCellProtocol {
+    func didSelect(cell: UICollectionViewCell) {
+        contentView.layer.cornerRadius = 16
+        contentView.layer.masksToBounds = true
+        contentView.backgroundColor = .emojiBackground
+    }
+    
+    func didDeselect(cell: UICollectionViewCell) {
+        contentView.backgroundColor = .clear
+    }
+    
+  
 }

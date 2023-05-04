@@ -32,7 +32,7 @@ final class SetNewTrackerCollectionViewHeader: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    func configHeader(collectionName: String) {
-//        label.text = collectionName
-//    }
+    func configHeader(headerLabel: String) {
+        label.text = headerLabel
+    }
 }
