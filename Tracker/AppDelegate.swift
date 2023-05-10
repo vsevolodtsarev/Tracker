@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "CoreDataModel")
         container.loadPersistentStores { (storeDescription, error)  in
-            if let error = error as? NSError? {
+            if let error = error as NSError? {
                 assertionFailure("persistent container error - \(String(describing: error))")
             }
         }
