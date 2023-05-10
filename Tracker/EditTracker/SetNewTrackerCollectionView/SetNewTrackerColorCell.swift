@@ -49,7 +49,7 @@ final class SetNewTrackerColorCell: UICollectionViewCell {
 extension SetNewTrackerColorCell: DidTapCellProtocol {
     func didSelect(cell: UICollectionViewCell) {
         contentView.layer.borderWidth = 3
-        contentView.layer.borderColor = UIColor.color2.withAlphaComponent(0.3).cgColor
+        contentView.layer.borderColor = colorLabel.backgroundColor?.withAlphaComponent(0.3).cgColor
         contentView.layer.cornerRadius = 8
     }
     
