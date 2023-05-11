@@ -8,6 +8,14 @@
 import Foundation
 import UIKit
 
+struct Tracker {
+    let id: UUID
+    let name: String
+    let emoji: String
+    let color: UIColor
+    let schedule: [WeekDay]?
+}
+
 enum TypeOfTracker {
     case habit
     case nonRegularEvent
@@ -46,22 +54,3 @@ enum WeekDay: String, CaseIterable {
         }
     }
 }
-
-struct Tracker {
-    let id: UUID
-    let name: String
-    let emoji: String
-    let color: UIColor
-    let schedule: [WeekDay]?
-}
-
-struct TrackerCategory {
-    let name: String
-    let trackers: [Tracker]
-}
-
-struct TrackerRecord: Hashable {
-    let id: UUID
-    let date: Date
-}
-
