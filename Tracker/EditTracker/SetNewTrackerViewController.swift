@@ -16,9 +16,7 @@ final class SetNewTrackerViewController: UIViewController {
     
     private var category: String = ["Домашний уют", "Спорт", "Уборка"].randomElement()! //Mock category
     private var schedule: [WeekDay] = []
-    private let mockEmoji: String = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ].randomElement()! //Mock emoji
     private let emoji: [String] = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪" ]
-    private let mockColor: UIColor = [UIColor(named: "Color selection 11")!, UIColor(named: "Color selection 12")!, UIColor(named: "Color selection 1")!, UIColor(named: "Color selection 2")!].randomElement()! //Mock color
     private let colors: [UIColor] = [UIColor.color1, UIColor.color2, UIColor.color3, UIColor.color4, UIColor.color5, UIColor.color6, UIColor.color7, UIColor.color8, UIColor.color9, UIColor.color10, UIColor.color11, UIColor.color12, UIColor.color13, UIColor.color14, UIColor.color15, UIColor.color16, UIColor.color17, UIColor.color18]
     weak var delegate: SetNewTrackerViewControllerDelegate?
     var typeOfTracker: TypeOfTracker?
