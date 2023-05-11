@@ -53,4 +53,29 @@ enum WeekDay: String, CaseIterable {
         case .sunday: return 1
         }
     }
+    
+    static func weekDayToString(_ weekdays: [WeekDay]?) -> String? {
+        guard let weekdays else { return nil }
+        let indexes = weekdays.map { Self.allCases.firstIndex(of: $0) }
+        var result = ""
+        for i in 0..<7 {
+            if indexes.contains(i) {
+                result += "1"
+            } else {
+                result += "0"
+            }
+        }
+        return result
+    }
+    
+    static func stringToWeekDay(from string: String?) -> [WeekDay]? {
+        guard let string else { return nil }
+        var weekdays = [WeekDay]()
+        for (index, value) in string.enumerated() {
+            guard value == "1" else { continue }
+            let weekday = Self.allCases[index]
+            weekdays.append(weekday)
+        }
+        return weekdays
+    }
 }
