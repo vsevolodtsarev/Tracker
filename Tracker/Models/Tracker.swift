@@ -14,6 +14,7 @@ struct Tracker {
     let emoji: String
     let color: UIColor
     let schedule: [WeekDay]?
+    let recordCount: Int
 }
 
 enum TypeOfTracker {
