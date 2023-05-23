@@ -9,14 +9,12 @@ import Foundation
 import UIKit
 
 protocol NewTrackersViewControllerDelegate: AnyObject {
-    func didAcceptButton(tracker: Tracker, category: String)
+    func didAcceptButton(tracker: Tracker, category: TrackerCategory)
 }
 
 final class NewTrackersViewController: UIViewController {
     
-    
     weak var delegate:  NewTrackersViewControllerDelegate?
-    
     
     private lazy var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -100,7 +98,7 @@ final class NewTrackersViewController: UIViewController {
 }
 
 extension NewTrackersViewController: SetNewTrackerViewControllerDelegate {
-    func didAcceptButton(tracker: Tracker, category: String) {
+    func didAcceptButton(tracker: Tracker, category: TrackerCategory) {
         dismiss(animated: true)
         let tracker = tracker
         let category = category

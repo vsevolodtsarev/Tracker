@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol SetNewTrackerViewControllerDelegate: AnyObject {
-    func didAcceptButton(tracker: Tracker, category: String)
+    func didAcceptButton(tracker: Tracker, category: TrackerCategory)
 }
 
 final class SetNewTrackerViewController: UIViewController {
@@ -220,11 +220,25 @@ final class SetNewTrackerViewController: UIViewController {
     
     @objc private func didTapCreateButton() {
         let uuid = UUID()
-        guard let trackerName = trackerNameTextField.text else { return }
-        guard let selectedColor else { return }
-        guard let selectedEmoji else { return }
-        let tracker = Tracker(id: uuid, name: trackerName, emoji: selectedEmoji, color: selectedColor, schedule: schedule)
-        delegate?.didAcceptButton(tracker: tracker, category: category)
+        guard
+            let trackerName = trackerNameTextField.text,
+            let selectedColor,
+            let selectedEmoji
+        else { return }
+        
+        let trackerCategory = TrackerCategory(
+            id: uuid,
+            name: category)
+        
+        let tracker = Tracker(
+            id: uuid,
+            name: trackerName,
+            emoji: selectedEmoji,
+            color: selectedColor, schedule:
+                schedule,
+            recordCount: 0)
+        
+        delegate?.didAcceptButton(tracker: tracker, category: trackerCategory)
     }
 }
 
